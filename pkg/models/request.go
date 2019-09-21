@@ -1,4 +1,4 @@
-package client
+package models
 
 import "github.com/Denton24646/gtumbler/pkg/crypto"
 

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Denton24646/gtumbler/pkg/crypto"
+	"github.com/Denton24646/gtumbler/pkg/models"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -65,7 +66,7 @@ func (u *UserClient) CreateCleanAddresses(number int) ([]crypto.Address, error) 
 // SendCleanAddresses sends the clean addresses to the mixer in an http POST request to the specified endpoint
 // The mixer sends the deposit address in the response to the request
 func (u *UserClient) SendCleanAddresses() error {
-	request := CleanAddressRequest{
+	request := models.CleanAddressRequest{
 		Id:        u.Id,
 		Addresses: u.CleanAddresses,
 	}
@@ -86,7 +87,7 @@ func (u *UserClient) SendCleanAddresses() error {
 		return err
 	}
 
-	response := &CleanAddressResponse{}
+	response := &models.CleanAddressResponse{}
 	if err := json.Unmarshal(body, response); err != nil {
 		return err
 	}
