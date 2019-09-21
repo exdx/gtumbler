@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/Denton24646/gtumbler/pkg/crypto"
 	"io/ioutil"
 	"math/rand"
@@ -54,6 +55,7 @@ func (u *UserClient) CreateCleanAddresses(number int) ([]crypto.Address, error) 
 		if err != nil {
 			return nil, err
 		}
+		fmt.Printf("  Address %d: %s\n", i, a)
 		addresses = append(addresses, a)
 	}
 	u.CleanAddresses = addresses
@@ -93,9 +95,9 @@ func (u *UserClient) SendCleanAddresses() error {
 	return nil
 }
 
-// SendDeposit sends coins from the address specified by the mixer
-func (u *UserClient) SendDeposit(address crypto.Address) error {
-	err := crypto.Send(address, u.DepositAddress)
+// SendDeposit sends coins to the deposit address specified by the mixer from an arbitrary address
+func (u *UserClient) SendDeposit(address crypto.Address, size crypto.Amount) error {
+	err := crypto.Send(address, u.DepositAddress, size)
 	if err != nil {
 		return err
 	}
@@ -111,7 +113,7 @@ func (u *UserClient) CheckCleanAddresses() (bool, error) {
 		if err != nil {
 			return false, err
 		}
-		if amount == 0 {
+		if amount == crypto.Amount("0.00") {
 			return false, nil
 		}
 	}

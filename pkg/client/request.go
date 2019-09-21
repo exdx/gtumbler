@@ -10,3 +10,5 @@ type CleanAddressRequest struct {
 type CleanAddressResponse struct {
 	DepositAddress crypto.Address `json:"address"`
 }
+
+
