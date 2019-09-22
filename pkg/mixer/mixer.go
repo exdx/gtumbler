@@ -25,7 +25,7 @@ type Server interface {
 	//CreateDepositAddress generates a new deposit address for the customer
 	generateCustomerDepositAddress() (crypto.Address, error)
 	//PollDepositAddress checks the deposit address periodically to see if the client deposited funds
-	PollDepositAddress(address crypto.Address) (bool, error)
+	PollDepositAddress(address crypto.Address) (crypto.Amount, error)
 }
 
 type Mixer struct {
@@ -92,20 +92,16 @@ func (m *Mixer) generateCustomerDepositAddress() (crypto.Address, error) {
 }
 
 // PollDepositAddress checks the provided addresses to see if the customer deposited funds yet
-func (m *Mixer) PollDepositAddress(address crypto.Address) (bool, error) {
+func (m *Mixer) PollDepositAddress(address crypto.Address) (crypto.Amount, error) {
 	amount, err := crypto.CheckAddress(address)
 	if err != nil {
-		return false, err
+		return "0", err
 	}
 	if amount == crypto.Amount("0.00") {
-		return false, nil
+		return "0", nil
 	}
-	return true, nil
+	return amount, nil
 }
 
-// TODO Validate checks the size of the deposit to make sure its valid
-// Deposits need to be validated: the have a certain minimum and maximum size
-func validate(size crypto.Amount) bool {
-	return true
-}
+
 
