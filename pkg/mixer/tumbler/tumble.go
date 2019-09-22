@@ -62,7 +62,7 @@ func (t *Tumbler) Mix(depositAddress crypto.Address, houseAddresses []crypto.Add
 	// TODO use some time variability to add additional randomness
 	var sendAmount float64
 	for _, chunk := range strategy {
-		amount * chunk = sendAmount
+		sendAmount = amount * chunk
 		houseKey := pickRandom(len(houseAddresses))
 		err := crypto.Send(depositAddress, houseAddresses[houseKey], crypto.Amount(fmt.Sprintf("%f", sendAmount)))
 		if err != nil {
@@ -98,7 +98,7 @@ func (t *Tumbler) SendMixedFunds(customerAddresses []crypto.Address, houseAddres
 	// note: this does not ensure each address the customer specified will receive funds, for example one may receive all funds
 	var sendAmount float64
 	for _, chunk := range strategy {
-		amount * chunk = sendAmount
+		sendAmount = amount * chunk
 		houseKey := pickRandom(len(houseAddresses))
 		customerKey := pickRandom(len(customerAddresses))
 		err := crypto.Send(houseAddresses[houseKey], customerAddresses[customerKey],  crypto.Amount(fmt.Sprintf("%f", sendAmount)))
