@@ -19,7 +19,7 @@ import (
 // 3. report the final tumbling process as complete
 
 const minDeposit = 0.1
-const maxDeposit = 100
+const maxDeposit = 10
 
 type Tumble interface {
 	// Mix mixes the client coins from the deposit address back to various house addresses
@@ -30,7 +30,7 @@ type Tumble interface {
 
 type Tumbler struct {
 	Size crypto.Amount
-	Strategies strategies
+	Strategies *strategies
 }
 
 func New(amount crypto.Amount) *Tumbler {
@@ -55,8 +55,8 @@ func (t *Tumbler) Mix(depositAddress crypto.Address, houseAddresses []crypto.Add
 	}
 
 	// pick random strategy from map
-	strategyKey := pickRandom(len(t.Strategies))
-	strategy := t.Strategies[strategyKey]
+	strategyKey := pickRandom(len(*t.Strategies))
+	strategy := (*t.Strategies)[strategyKey]
 
 	// send amount in strategy to random house address
 	// TODO use some time variability to add additional randomness
@@ -82,7 +82,7 @@ func valid(size float64) bool {
 	return false
 }
 
-// SendMixedFunds sends funds from random house addresses to the customer deposit addresses
+// SendMixedFunds sends funds on the backend of the transaction, from random house addresses to the customer deposit addresses
 func (t *Tumbler) SendMixedFunds(customerAddresses []crypto.Address, houseAddresses []crypto.Address) error {
 	//parse amount, which is provided as a string, into a float
 	amount, err := strconv.ParseFloat(string(t.Size), 64)
@@ -91,8 +91,8 @@ func (t *Tumbler) SendMixedFunds(customerAddresses []crypto.Address, houseAddres
 	}
 
 	// pick random strategy from map
-	strategyKey := pickRandom(len(t.Strategies))
-	strategy := t.Strategies[strategyKey]
+	strategyKey := pickRandom(len(*t.Strategies))
+	strategy := (*t.Strategies)[strategyKey]
 
 	// send funds from a random house address to a random customer address
 	// note: this does not ensure each address the customer specified will receive funds, for example one may receive all funds

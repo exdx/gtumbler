@@ -3,10 +3,13 @@ package mixer
 import (
 	"encoding/json"
 	"github.com/Denton24646/gtumbler/pkg/crypto"
+	"github.com/Denton24646/gtumbler/pkg/mixer/tumbler"
 	"github.com/Denton24646/gtumbler/pkg/models"
 	"io/ioutil"
+	"log"
 	"math/rand"
 	"net/http"
+	"time"
 )
 
 // The mixer is an http server responsible for mixing the client coins by doing the following
@@ -26,6 +29,8 @@ type Server interface {
 	generateCustomerDepositAddress() (crypto.Address, error)
 	//PollDepositAddress checks the deposit address periodically to see if the client deposited funds
 	PollDepositAddress(address crypto.Address) (crypto.Amount, error)
+	// HandleTransaction is responsible for all the backend work of the mixer service
+	HandleTransaction(id int) error
 }
 
 type Mixer struct {
@@ -43,6 +48,18 @@ type CustomerData struct {
 	CleanAddresses  []crypto.Address
 	DepositAddress  crypto.Address
 	Fee             float64
+}
+
+func New() *Mixer {
+	return &Mixer{
+		HouseAddresses: []crypto.Address{
+			0: "House1",
+			1: "House2",
+			2: "House3",
+			3: "House4",
+			4: "House5",
+		},
+	}
 }
 
 func (m *Mixer) Create(w http.ResponseWriter, req *http.Request) {
@@ -80,6 +97,16 @@ func (m *Mixer) Create(w http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		w.WriteHeader(404)
 	}
+
+	// concurrently handle customer transactions via goroutines
+	go func(id int) {
+		err := m.HandleTransaction(id)
+		if err != nil {
+			w.WriteHeader(404)
+		}
+	}(customerId)
+
+	w.WriteHeader(http.StatusOK)
 }
 
 // generateCustomerDepositAddress generates new addresses for customers to deposit into
@@ -103,5 +130,42 @@ func (m *Mixer) PollDepositAddress(address crypto.Address) (crypto.Amount, error
 	return amount, nil
 }
 
+// HandleTransaction is the controller that handles the flow of customer funds
+// First it polls to check the customer deposit address for funds
+// Once funds are sent it uses the tumbler to tumble funds and send them back to the mixer
+func (m *Mixer) HandleTransaction(id int) error {
+	var amount crypto.Amount
+	for {
+		deposit, err := m.PollDepositAddress(m.Customers[id].DepositAddress)
+		if err != nil {
+			return err
+		}
+		if deposit != crypto.Amount("0") {
+			amount = deposit
+			break
+		}
+		time.Sleep(10 * time.Second)
+	}
 
+	log.Printf(" **** Received %s coins from address %s with return addresses %v", amount, m.Customers[id].DepositAddress,
+		m.Customers[id].CleanAddresses)
+
+	tumblr := tumbler.New(amount)
+	err := tumblr.Mix(m.Customers[id].DepositAddress, m.HouseAddresses)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("**** Tumbled coins from %s to house addresses %s successfully", m.Customers[id].DepositAddress,
+		m.HouseAddresses)
+
+	err = tumblr.SendMixedFunds(m.Customers[id].CleanAddresses, m.HouseAddresses)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("**** Sent mixed coins back to %s successfully ****", m.Customers[id].CleanAddresses)
+
+	return nil
+}
 
