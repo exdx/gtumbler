@@ -22,14 +22,23 @@ func main() {
 
 	// create addresses or use addresses provided
 	fmt.Println("**** Generating newly created address for use with the gtumbler mixer")
-	c.CreateCleanAddresses(config.NumberAddresses)
-
-	// show deposit address
+	_, err = c.CreateCleanAddresses(config.NumberAddresses)
+	if err != nil {
+		log.Printf("error generating addresses: %s", err )
+	}
 	fmt.Println(" **** Address creation successful ****")
-	fmt.Printf("**** gtumbler deposit address %s", c.DepositAddress)
-	fmt.Println("\n **** Sending amount %s to deposit address from address %s", config.Size, config.SendAddress)
-	c.SendDeposit(config.SendAddress, config.Size)
 
+	err = c.SendCleanAddresses()
+	if err != nil {
+		log.Printf("error receiving deposit address: %s", err)
+	}
+	fmt.Printf("**** gtumbler deposit address %s", c.DepositAddress)
+	fmt.Printf("**** Sending amount %s to deposit address from address %s", config.Size, config.SendAddress)
+
+	err = c.SendDeposit(config.SendAddress, config.Size)
+	if err != nil {
+		log.Printf(" error sending funds to deposit address %s: %s", c.DepositAddress, err)
+	}
 	fmt.Println("**** Deposit sent to gtumbler mixer ****")
 	fmt.Println("**** Waiting 5 seconds and checking blockchain for mixing status ****")
 
