@@ -52,6 +52,7 @@ type CustomerData struct {
 
 func New() *Mixer {
 	return &Mixer{
+		Customers: make(map[int]CustomerData),
 		HouseAddresses: []crypto.Address{
 			0: "House1",
 			1: "House2",
@@ -115,6 +116,7 @@ func (m *Mixer) generateCustomerDepositAddress() (crypto.Address, error) {
 	if err != nil {
 		return "", err
 	}
+	log.Printf("generated deposit address %s", address)
 	return address, nil
 }
 
