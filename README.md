@@ -47,16 +47,6 @@ The strategies are limited by the number of pre-seeded house accounts (5)
 
 ## Install and run
 
-### Recommended: Docker
-
-`bash docker-build.sh` installs both the client and mixer images on the local docker daemon. 
-
-Run a server container in one terminal, and the client in another. _Start the server before the client_. 
-
-_Terminal 1_: `docker run --rm -p 8989:8989 gtumbler/mixer:v0.0.1`
-
-_Terminal 2_: `docker run --rm -p 8989:8989 gtumber/client:v0.0.1`
-
 ### Running locally
 Be sure to have a local Go 1.11+ environment setup with support for go modules. Run `bash build.sh` to generate client and mixer binaries. 
 
@@ -65,6 +55,16 @@ Run the server in one terminal, and the client in another. _Start the server bef
 _Terminal 1_: `./gtumbler-mixer`
 
 _Terminal 2_: `./gtumbler-client`
+
+## Sample output
+
+Client output
+
+![client](https://i.imgur.com/3rUGvQw.png)
+
+Mixer output
+
+![mixer](https://i.imgur.com/DkPYAcS.png)
 
 ## Testing
 

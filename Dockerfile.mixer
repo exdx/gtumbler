@@ -1,7 +1,0 @@
-FROM golang:1.11
-RUN mkdir /app
-COPY . /app/
-WORKDIR /app
-RUN go build -o gtumbler-server cmd/mixer/main.go
-ENTRYPOINT ["./gtumbler-server"]
-
