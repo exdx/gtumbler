@@ -56,6 +56,19 @@ _Terminal 1_: `./gtumbler-mixer`
 
 _Terminal 2_: `./gtumbler-client`
 
+There is some optional runtime configuration for the client. 
+
+`$MIXERURL` sets the location of mixer create endpoint, by default `http://localhost:8989/create`
+
+`$NUMBERADDRESSES` sets the number of new addresses created by the client, by default 3
+
+`$SENDADDRESS` sets the address that sends funds initially to the deposit address, by default "Genesis"
+
+`$SIZE` sets the amount deposited into the deposit account by the client, by default 4 coins
+
+For example, running `NUMBERADDRESSES=1 SIZE=6 ./gtumbler-client` 
+will tell the client to create only one return address and send six coins into the mixer to be tumbled.
+
 ## Sample output
 
 Client output
