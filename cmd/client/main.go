@@ -32,8 +32,8 @@ func main() {
 	if err != nil {
 		log.Printf("\nerror receiving deposit address: %s", err)
 	}
-	fmt.Printf("**** \ngtumbler deposit address %s", c.DepositAddress)
-	fmt.Printf("**** \nSending amount %s to deposit address from address %s", config.Size, config.SendAddress)
+	fmt.Printf("**** gtumbler deposit address %s\n", c.DepositAddress)
+	fmt.Printf("**** Sending amount %s to deposit address from address %s\n", config.Size, config.SendAddress)
 
 	err = c.SendDeposit(config.SendAddress, config.Size)
 	if err != nil {
@@ -48,7 +48,7 @@ func main() {
 			fmt.Println("**** Issue mixing your coins. Check the blockchain for more information. ****")
 		}
 		if finished {
-			fmt.Println("**** Successful mixing. The coins are now in the addresses specified. Thanks for using gtumbler ****")
+			fmt.Println("**** Successful mixing. The coins are now in the addresses specified. Thank you for using gtumbler. ****")
 			break
 		} else {
 			time.Sleep(5 * time.Second)

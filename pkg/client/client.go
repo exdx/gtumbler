@@ -106,17 +106,23 @@ func (u *UserClient) SendDeposit(address crypto.Address, size crypto.Amount) err
 }
 
 // CheckCleanAddresses checks to see if all the provided addresses received the end deposits from the mixer
-// It returns true in the case where all provided addresses have funds, false otherwise
+// It returns true in the case where at least one provided address has funds, false otherwise
 // Assumes provided addresses have a zero balance initially
 func (u *UserClient) CheckCleanAddresses() (bool, error) {
+	var found bool
 	for _, address := range u.CleanAddresses {
 		amount, err := crypto.CheckAddress(address)
 		if err != nil {
 			return false, err
 		}
-		if amount == crypto.Amount("0.00") {
-			return false, nil
+		if amount == crypto.Amount("0.0") {
+			continue
+		}
+		if amount != crypto.Amount("0.0") {
+			found = true
+			return found, nil
 		}
 	}
-	return true, nil
+
+	return found, nil
 }

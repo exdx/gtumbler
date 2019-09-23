@@ -20,7 +20,7 @@ import (
 // 3. Provide a deposit address back to the client
 // 4. Check the blockchain to see if/when the client sends funds to the deposit address
 // 5. When funds are received, move funds into smaller random amounts into addresses mixer controls
-// 6. Send those funds back to the clients specified address in random intervals
+// 6. Send those funds back to the clients specified address
 
 type Server interface {
 	// Create is the /create endpoint for the mixer - it accepts the list of new addresses and returns the deposit address
@@ -68,18 +68,18 @@ func (m *Mixer) Create(w http.ResponseWriter, req *http.Request) {
 
 	body, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		w.WriteHeader(404)
+		return
 	}
 	defer req.Body.Close()
 
 	err = json.Unmarshal(body, &request)
 	if err != nil {
-		w.WriteHeader(404)
+		return
 	}
 
 	depositAddress, err := m.generateCustomerDepositAddress()
 	if err != nil {
-		w.WriteHeader(404)
+		return
 	}
 
 	customerId := request.Id
@@ -96,18 +96,16 @@ func (m *Mixer) Create(w http.ResponseWriter, req *http.Request) {
 
 	_, err = w.Write(res)
 	if err != nil {
-		w.WriteHeader(404)
+		return
 	}
 
 	// concurrently handle customer transactions via goroutines
 	go func(id int) {
 		err := m.HandleTransaction(id)
 		if err != nil {
-			w.WriteHeader(404)
+			return
 		}
 	}(customerId)
-
-	w.WriteHeader(http.StatusOK)
 }
 
 // generateCustomerDepositAddress generates new addresses for customers to deposit into
