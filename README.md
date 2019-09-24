@@ -81,9 +81,15 @@ Mixer output
 
 ## Testing
 
-Tests were written for the mixer only because of time constraints. Several unit tests were written. 
+Tests were written for the mixer only because of time constraints. Several unit tests were written, one for each function
+in the mixer, providing good coverage.  
 
 To run tests locally run `go test ./...`
+
+Test results
+
+![tests](https://i.imgur.com/9nEJwqv.png)
+
 
 ## Positives
 
