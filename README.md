@@ -1,6 +1,6 @@
 # gtumbler
 
-gtumbler is a JobCoin mixer written in Go. 
+gtumbler is a JobCoin mixer written as part of the interview process for Gemini. Total time spent: 10 hours.  
 
 ## Structure
 
